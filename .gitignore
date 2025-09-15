@@ -36,3 +36,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Test Output ###
+test-output/
+screenshots/
+*.png
+*.html
+logs/

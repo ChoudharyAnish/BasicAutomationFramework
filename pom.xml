@@ -61,6 +61,13 @@
             <version>${poi.version}</version>
         </dependency>
 
+        <!-- JSON Processing for Telegram (lightweight alternative) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>

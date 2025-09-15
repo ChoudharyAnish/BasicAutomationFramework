@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -37,6 +39,9 @@ public class ScreenshotHelper {
             // Save screenshot
             Files.write(Paths.get(filePath), sourceFile);
             
+            // Clean up old screenshots (keep only latest 3)
+            cleanupOldScreenshots(screenshotDir);
+            
             return filePath;
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,6 +60,30 @@ public class ScreenshotHelper {
             System.out.println("Screenshot captured for failed test: " + screenshotPath);
         } catch (Exception e) {
             System.err.println("Failed to capture screenshot on test failure: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Clean up old screenshots, keeping only the latest 3
+     */
+    private static void cleanupOldScreenshots(String screenshotDir) {
+        try {
+            File directory = new File(screenshotDir);
+            File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".png"));
+            
+            if (files != null && files.length > 3) {
+                // Sort files by last modified date (newest first)
+                Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+                
+                // Delete files beyond the latest 3
+                for (int i = 3; i < files.length; i++) {
+                    if (files[i].delete()) {
+                        System.out.println("Deleted old screenshot: " + files[i].getName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error cleaning up screenshots: " + e.getMessage());
         }
     }
 }

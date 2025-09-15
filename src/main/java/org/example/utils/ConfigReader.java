@@ -82,4 +82,29 @@ public class ConfigReader {
     public static int getRetryCount() {
         return Integer.parseInt(getProperty("retry.count"));
     }
+
+    // Telegram Configuration (with environment variable fallback)
+    public static String getTelegramBotToken() {
+        String token = getProperty("telegram.bot.token");
+        // If token contains ${}, try to get from environment variable
+        if (token != null && token.contains("${TELEGRAM_BOT_TOKEN}")) {
+            String envToken = System.getenv("TELEGRAM_BOT_TOKEN");
+            return envToken != null ? envToken : "7729667706:AAF79C2IVtieOXm16RWIpi0X5Mjg_65fSnA";
+        }
+        return token;
+    }
+
+    public static String getTelegramChatId() {
+        String chatId = getProperty("telegram.chat.id");
+        // If chatId contains ${}, try to get from environment variable
+        if (chatId != null && chatId.contains("${TELEGRAM_CHAT_ID}")) {
+            String envChatId = System.getenv("TELEGRAM_CHAT_ID");
+            return envChatId != null ? envChatId : "6166074782";
+        }
+        return chatId;
+    }
+
+    public static boolean isTelegramEnabled() {
+        return Boolean.parseBoolean(getProperty("telegram.enabled"));
+    }
 }
