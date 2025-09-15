@@ -85,10 +85,6 @@ public class BaseTest {
         test.info("📦 Class: " + className);
         test.info("⏰ Start Time: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
         
-        // Send Telegram start notification
-        if (telegramNotifier != null) {
-            telegramNotifier.sendTestStartNotification(testName);
-        }
         
         // Setup WebDriver
         setupDriver();

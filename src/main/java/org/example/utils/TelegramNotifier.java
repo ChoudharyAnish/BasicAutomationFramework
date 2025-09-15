@@ -117,21 +117,6 @@ public class TelegramNotifier {
         }
     }
 
-    /**
-     * Send test start notification
-     */
-    public void sendTestStartNotification(String testName) {
-        String timestamp = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
-        String message = String.format(
-            "🚀 TEST STARTED 🚀\n\n" +
-            "📋 Test: %s\n" +
-            "⏰ Started at: %s\n" +
-            "🌐 Environment: Production (Flipkart)\n\n" +
-            "⏳ Test execution in progress...",
-            testName, timestamp
-        );
-        sendMessage(message);
-    }
 
     /**
      * Send daily test schedule notification
