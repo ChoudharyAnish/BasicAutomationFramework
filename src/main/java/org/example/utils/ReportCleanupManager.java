@@ -40,7 +40,7 @@ public class ReportCleanupManager {
             
             // Create directory if it doesn't exist
             if (!reportDir.exists()) {
-                System.out.println("📁 Report directory doesn't exist, creating: " + reportDirectory);
+                System.out.println("[INFO] Report directory doesn't exist, creating: " + reportDirectory);
                 reportDir.mkdirs();
                 result.setMessage("Report directory created: " + reportDirectory);
                 return result;
@@ -60,7 +60,7 @@ public class ReportCleanupManager {
             
             // If we have fewer reports than the limit, no cleanup needed
             if (reportFiles.length <= maxReportsToKeep) {
-                result.setMessage(String.format("✅ Only %d report(s) found, no cleanup needed (keeping latest %d)", 
+                result.setMessage(String.format("[INFO] Only %d report(s) found, no cleanup needed (keeping latest %d)", 
                     reportFiles.length, maxReportsToKeep));
                 return result;
             }
@@ -78,7 +78,7 @@ public class ReportCleanupManager {
             result.setReportsDeleted(reportsToDelete.size());
             
             // Log reports being kept
-            System.out.println("📋 Reports being kept (latest " + maxReportsToKeep + "):");
+            System.out.println("[CLEANUP] Reports being kept (latest " + maxReportsToKeep + "):");
             for (int i = 0; i < reportsToKeep.size(); i++) {
                 File report = reportsToKeep.get(i);
                 String timestamp = extractTimestampFromFilename(report.getName());
@@ -89,7 +89,7 @@ public class ReportCleanupManager {
             
             // Delete old reports
             if (!reportsToDelete.isEmpty()) {
-                System.out.println("🗑️ Deleting " + reportsToDelete.size() + " old report(s):");
+                System.out.println("[CLEANUP] Deleting " + reportsToDelete.size() + " old report(s):");
                 
                 for (File report : reportsToDelete) {
                     try {
@@ -97,14 +97,14 @@ public class ReportCleanupManager {
                         String formattedTime = formatTimestamp(timestamp);
                         
                         if (report.delete()) {
-                            System.out.println("  ✅ Deleted: " + report.getName() + " (" + formattedTime + ")");
+                            System.out.println("  [OK] Deleted: " + report.getName() + " (" + formattedTime + ")");
                             result.addDeletedReport(report.getName());
                         } else {
-                            System.out.println("  ❌ Failed to delete: " + report.getName());
+                            System.out.println("  [ERROR] Failed to delete: " + report.getName());
                             result.addFailedDeletion(report.getName());
                         }
                     } catch (Exception e) {
-                        System.out.println("  ❌ Error deleting " + report.getName() + ": " + e.getMessage());
+                        System.out.println("  [ERROR] Error deleting " + report.getName() + ": " + e.getMessage());
                         result.addFailedDeletion(report.getName());
                     }
                 }
@@ -112,16 +112,16 @@ public class ReportCleanupManager {
             
             // Set final result message
             if (result.getFailedDeletions().isEmpty()) {
-                result.setMessage(String.format("✅ Cleanup completed successfully! Kept %d latest reports, deleted %d old reports", 
+                result.setMessage(String.format("[SUCCESS] Cleanup completed successfully! Kept %d latest reports, deleted %d old reports", 
                     result.getReportsKept(), result.getReportsDeleted()));
             } else {
-                result.setMessage(String.format("⚠️ Cleanup completed with %d failed deletions. Kept %d reports, deleted %d reports", 
+                result.setMessage(String.format("[WARNING] Cleanup completed with %d failed deletions. Kept %d reports, deleted %d reports", 
                     result.getFailedDeletions().size(), result.getReportsKept(), 
                     result.getReportsDeleted() - result.getFailedDeletions().size()));
             }
             
         } catch (Exception e) {
-            result.setMessage("❌ Error during cleanup: " + e.getMessage());
+            result.setMessage("[ERROR] Error during cleanup: " + e.getMessage());
             System.err.println("Error during report cleanup: " + e.getMessage());
             e.printStackTrace();
         }
@@ -155,7 +155,7 @@ public class ReportCleanupManager {
                 return Integer.parseInt(maxReportsProperty.trim());
             }
         } catch (NumberFormatException e) {
-            System.out.println("⚠️ Invalid report.max.keep configuration, using default: " + DEFAULT_MAX_REPORTS);
+            System.out.println("[WARNING] Invalid report.max.keep configuration, using default: " + DEFAULT_MAX_REPORTS);
         }
         return DEFAULT_MAX_REPORTS;
     }

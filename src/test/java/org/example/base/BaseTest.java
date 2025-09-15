@@ -26,10 +26,24 @@ public class BaseTest {
     protected ExtentTest test;
     protected TelegramNotifier telegramNotifier;
     protected EmailNotifier emailNotifier;
+    
+    // Simple counters for test results
+    protected static int totalTests = 0;
+    protected static int passedTests = 0;
+    protected static int failedTests = 0;
+    protected static java.util.List<String> testResults = new java.util.ArrayList<>();
+    protected static long suiteStartTime = 0;
 
     @BeforeSuite
     public void beforeSuite() {
         ExtentManager.getInstance();
+        
+        // Initialize simple counters
+        totalTests = 0;
+        passedTests = 0;
+        failedTests = 0;
+        testResults.clear();
+        suiteStartTime = System.currentTimeMillis();
         
         // Initialize Telegram notifier if enabled
         if (ConfigReader.isTelegramEnabled()) {
@@ -38,9 +52,9 @@ public class BaseTest {
             
             if (botToken != null && chatId != null) {
                 telegramNotifier = new TelegramNotifier(botToken, chatId);
-                System.out.println("✅ Telegram notifications enabled");
+                System.out.println("[INFO] Telegram notifications enabled");
             } else {
-                System.out.println("⚠️ Telegram notifications disabled - missing environment variables");
+                System.out.println("[WARNING] Telegram notifications disabled - missing environment variables");
                 telegramNotifier = null;
             }
         }
@@ -48,7 +62,7 @@ public class BaseTest {
         // Initialize Email notifier if enabled
         if (ConfigReader.isEmailEnabled()) {
             emailNotifier = new EmailNotifier();
-            System.out.println("✅ Email notifications enabled");
+            System.out.println("[INFO] Email notifications enabled");
         }
     }
 
@@ -167,21 +181,18 @@ public class BaseTest {
         // Add test execution summary
         test.info("🏁 Test execution completed at: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
         
-               // Send Telegram result notification
-               if (telegramNotifier != null) {
-                   String testName = result.getMethod().getMethodName();
-                   boolean passed = (result.getStatus() == ITestResult.SUCCESS);
-                   String reportPath = ExtentManager.getReportPath();
-                   telegramNotifier.sendTestResults(testName, passed, duration, reportPath);
-               }
-               
-               // Send Email result notification
-               if (emailNotifier != null) {
-                   String testName = result.getMethod().getMethodName();
-                   boolean passed = (result.getStatus() == ITestResult.SUCCESS);
-                   String reportPath = ExtentManager.getReportPath();
-                   emailNotifier.sendTestReport(testName, passed, duration, reportPath);
-               }
+        // Track test results with simple counters (no individual notifications)
+        String testName = result.getMethod().getMethodName();
+        totalTests++;
+        
+        if (result.getStatus() == ITestResult.SUCCESS) {
+            passedTests++;
+            testResults.add("[PASS] " + testName + " (" + formatDuration(duration) + ")");
+        } else {
+            failedTests++;
+            String errorMsg = result.getThrowable() != null ? result.getThrowable().getMessage() : "Unknown error";
+            testResults.add("[FAIL] " + testName + " (" + formatDuration(duration) + ")\n   ERROR: " + errorMsg);
+        }
         
         // Close browser
         if (getDriver() != null) {
@@ -208,7 +219,81 @@ public class BaseTest {
     @AfterSuite
     public void afterSuite() {
         ExtentManager.flush();
-        System.out.println("Test execution completed. Report generated at: " + ExtentManager.getReportPath());
+        String reportPath = ExtentManager.getReportPath();
+        
+        // Calculate suite metrics
+        long suiteDuration = System.currentTimeMillis() - suiteStartTime;
+        double successRate = totalTests > 0 ? (passedTests * 100.0 / totalTests) : 0.0;
+        String timestamp = new java.text.SimpleDateFormat("MMM dd, yyyy hh:mm:ss a").format(new java.util.Date());
+        
+        System.out.println("Test execution completed. Report generated at: " + reportPath);
+        
+        // Send consolidated Telegram notification
+        if (telegramNotifier != null) {
+            System.out.println("[TELEGRAM] Sending consolidated notification...");
+            String telegramMessage = buildTelegramSummary(successRate, suiteDuration, timestamp, reportPath);
+            telegramNotifier.sendMessage(telegramMessage);
+        }
+        
+        // Send consolidated Email notification  
+        if (emailNotifier != null) {
+            System.out.println("[EMAIL] Sending consolidated notification...");
+            String emailSummary = buildEmailSummary(successRate, suiteDuration, timestamp);
+            emailNotifier.sendTestReport("FlipkartSearchTests", failedTests == 0, suiteDuration, reportPath);
+        }
+        
+        // Print suite summary to console
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("*** TEST SUITE SUMMARY ***");
+        System.out.println("=".repeat(60));
+        System.out.printf("Suite: FlipkartSearchTests%n");
+        System.out.printf("[PASS] Passed: %d tests%n", passedTests);
+        System.out.printf("[FAIL] Failed: %d tests%n", failedTests);
+        System.out.printf("Success Rate: %.1f%%%n", successRate);
+        System.out.printf("Duration: %s%n", formatDuration(suiteDuration));
+        System.out.printf("Completed: %s%n", timestamp);
+        System.out.println("=".repeat(60));
+    }
+    
+    /**
+     * Build Telegram summary message
+     */
+    private String buildTelegramSummary(double successRate, long duration, String timestamp, String reportPath) {
+        StringBuilder message = new StringBuilder();
+        
+        // Header
+        message.append("*** Test Suite Completed: FlipkartSearchTests ***\n\n");
+        
+        // Summary
+        message.append("EXECUTION SUMMARY:\n");
+        message.append("[PASS] Passed: ").append(passedTests).append(" tests\n");
+        message.append("[FAIL] Failed: ").append(failedTests).append(" tests\n");
+        message.append("Success Rate: ").append(String.format("%.1f%%", successRate)).append("\n\n");
+        
+        // Timing
+        message.append("Duration: ").append(formatDuration(duration)).append("\n");
+        message.append("Completed: ").append(timestamp).append("\n\n");
+        
+        // Test Details
+        message.append("TEST DETAILS:\n");
+        for (String testResult : testResults) {
+            message.append(testResult).append("\n");
+        }
+        
+        // Report
+        String reportName = reportPath.substring(reportPath.lastIndexOf("/") + 1);
+        message.append("\nReport: ").append(reportName);
+        message.append("\n\nAutomated by BasicAutomationFramework");
+        
+        return message.toString();
+    }
+    
+    /**
+     * Build Email summary for subject line
+     */
+    private String buildEmailSummary(double successRate, long duration, String timestamp) {
+        return String.format("FlipkartSearchTests - %d/%d Passed (%.1f%%) %s", 
+            passedTests, totalTests, successRate, failedTests == 0 ? "[PASS]" : "[FAIL]");
     }
 
     // Enhanced utility methods for tests
