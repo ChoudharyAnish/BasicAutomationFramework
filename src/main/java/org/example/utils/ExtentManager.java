@@ -302,23 +302,34 @@ public class ExtentManager {
                 
                 // Add success rate calculation
                 setTimeout(() => {
-                    const passedTests = document.querySelector('[data-test-status="pass"]')?.textContent || '0';
-                    const totalTests = document.querySelector('[data-total-tests]')?.textContent || '0';
-                    const successRate = totalTests > 0 ? ((parseInt(passedTests) / parseInt(totalTests)) * 100).toFixed(1) : '0';
+                    // Get the test statistics from ExtentReports dashboard elements
+                    const passElement = document.querySelector('p.text-pass')?.nextElementSibling;
+                    const failElement = document.querySelector('p.text-fail')?.nextElementSibling;
+                    
+                    const passedTests = passElement ? parseInt(passElement.textContent) || 0 : 0;
+                    const failedTests = failElement ? parseInt(failElement.textContent) || 0 : 0;
+                    const totalTests = passedTests + failedTests;
+                    const successRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : '0';
+                    
+                    console.log('ExtentReports Stats:', { passedTests, failedTests, totalTests, successRate });
                     
                     // Create success rate display
                     const successRateElement = document.createElement('div');
                     successRateElement.className = 'stats-card';
                     successRateElement.innerHTML = `
                         <div class="stats-number">${successRate}%</div>
-                        <div class="stats-label">🎯 Success Rate</div>
+                        <div class="stats-label">Success Rate</div>
                     `;
                     
-                    const statsContainer = document.querySelector('.dashboard-view .row');
-                    if (statsContainer) {
-                        statsContainer.appendChild(successRateElement);
+                    // Find the container in the dashboard
+                    const dashboardRow = document.querySelector('.dashboard-view .row');
+                    if (dashboardRow) {
+                        dashboardRow.appendChild(successRateElement);
+                        console.log('Success rate card added with:', successRate + '%');
+                    } else {
+                        console.log('Dashboard container not found');
                     }
-                }, 1000);
+                }, 1500);
             });
             """;
     }

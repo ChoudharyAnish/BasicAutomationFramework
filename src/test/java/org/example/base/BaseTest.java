@@ -164,22 +164,22 @@ public class BaseTest {
         if (result.getStatus() == ITestResult.FAILURE) {
             // Capture screenshot on failure
             String screenshotPath = ScreenshotHelper.captureScreenshot(getDriver(), result.getMethod().getMethodName());
-            test.fail("❌ <b>TEST FAILED</b>");
+            test.fail("[FAIL] <b>TEST FAILED</b>");
             test.fail("<details><summary><b>Error Details</b></summary>" + 
                      "<pre>" + result.getThrowable().getMessage() + "</pre></details>");
-            test.addScreenCaptureFromPath(screenshotPath, "💥 Failure Screenshot");
-            test.info("⏱️ Test Duration: " + formatDuration(duration));
+            test.addScreenCaptureFromPath(screenshotPath, "Failure Screenshot");
+            test.info("Test Duration: " + formatDuration(duration));
         } else if (result.getStatus() == ITestResult.SUCCESS) {
-            test.pass("✅ <b>TEST PASSED SUCCESSFULLY</b>");
-            test.pass("🎉 All assertions completed without errors");
-            test.info("⏱️ Test Duration: " + formatDuration(duration));
+            test.pass("[PASS] <b>TEST PASSED SUCCESSFULLY</b>");
+            test.pass("All assertions completed without errors");
+            test.info("Test Duration: " + formatDuration(duration));
         } else if (result.getStatus() == ITestResult.SKIP) {
-            test.skip("⏭️ <b>TEST SKIPPED</b>");
-            test.skip("📝 Reason: " + result.getThrowable().getMessage());
+            test.skip("[SKIP] <b>TEST SKIPPED</b>");
+            test.skip("Reason: " + result.getThrowable().getMessage());
         }
         
         // Add test execution summary
-        test.info("🏁 Test execution completed at: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
+        test.info("Test execution completed at: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
         
         // Track test results with simple counters (no individual notifications)
         String testName = result.getMethod().getMethodName();
@@ -218,6 +218,9 @@ public class BaseTest {
 
     @AfterSuite
     public void afterSuite() {
+        // Add suite-level summary to ExtentReports before flushing
+        addSuiteSummaryToExtentReports();
+        
         ExtentManager.flush();
         String reportPath = ExtentManager.getReportPath();
         
@@ -295,37 +298,71 @@ public class BaseTest {
         return String.format("FlipkartSearchTests - %d/%d Passed (%.1f%%) %s", 
             passedTests, totalTests, successRate, failedTests == 0 ? "[PASS]" : "[FAIL]");
     }
+    
+    /**
+     * Add suite-level summary to ExtentReports via system information only
+     */
+    private void addSuiteSummaryToExtentReports() {
+        if (totalTests > 0) {
+            double successRate = (passedTests * 100.0 / totalTests);
+            long suiteDuration = System.currentTimeMillis() - suiteStartTime;
+            
+            // Only add system information - do NOT create a separate test that affects statistics
+            ExtentManager.getInstance().setSystemInfo("Test Suite", "FlipkartSearchTests");
+            ExtentManager.getInstance().setSystemInfo("Total Tests", String.valueOf(totalTests));
+            ExtentManager.getInstance().setSystemInfo("Tests Passed", String.valueOf(passedTests));
+            ExtentManager.getInstance().setSystemInfo("Tests Failed", String.valueOf(failedTests));
+            ExtentManager.getInstance().setSystemInfo("Success Rate", String.format("%.1f%%", successRate));
+            ExtentManager.getInstance().setSystemInfo("Suite Duration", formatDuration(suiteDuration));
+            ExtentManager.getInstance().setSystemInfo("Execution Time", new java.text.SimpleDateFormat("MMM dd, yyyy hh:mm:ss a").format(new java.util.Date()));
+            
+            // Add test results as system info
+            StringBuilder testResultsInfo = new StringBuilder();
+            for (int i = 0; i < testResults.size(); i++) {
+                String testResult = testResults.get(i);
+                String status = testResult.startsWith("[PASS]") ? "PASSED" : "FAILED";
+                String testName = testResult.split(" \\(")[0].substring(6); // Remove "[PASS] " or "[FAIL] "
+                testResultsInfo.append(String.format("%d. %s: %s", i + 1, testName, status));
+                if (i < testResults.size() - 1) {
+                    testResultsInfo.append(" | ");
+                }
+            }
+            ExtentManager.getInstance().setSystemInfo("Test Results", testResultsInfo.toString());
+            
+            System.out.println("[EXTENT] Added suite summary to system info - Success Rate: " + String.format("%.1f%%", successRate));
+        }
+    }
 
     // Enhanced utility methods for tests
     protected void logInfo(String message) {
-        test.info("ℹ️ " + message);
+        test.info("[INFO] " + message);
     }
 
     protected void logPass(String message) {
-        test.pass("✅ " + message);
+        test.pass("[PASS] " + message);
     }
 
     protected void logFail(String message) {
-        test.fail("❌ " + message);
+        test.fail("[FAIL] " + message);
     }
 
     protected void logWarning(String message) {
-        test.warning("⚠️ " + message);
+        test.warning("[WARNING] " + message);
     }
     
     protected void logStep(String stepDescription) {
-        test.info("👣 <b>Step:</b> " + stepDescription);
+        test.info("<b>Step:</b> " + stepDescription);
     }
     
     protected void logAction(String action) {
-        test.info("🎯 <b>Action:</b> " + action);
+        test.info("<b>Action:</b> " + action);
     }
     
     protected void logVerification(String verification) {
-        test.info("🔍 <b>Verification:</b> " + verification);
+        test.info("<b>Verification:</b> " + verification);
     }
     
     protected void logDebug(String debugInfo) {
-        test.info("🐛 <b>Debug:</b> " + debugInfo);
+        test.info("<b>Debug:</b> " + debugInfo);
     }
 }
