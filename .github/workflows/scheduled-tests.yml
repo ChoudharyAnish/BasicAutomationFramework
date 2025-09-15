@@ -58,10 +58,10 @@ jobs:
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+        EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+        EMAIL_TO_RECIPIENTS: ${{ secrets.EMAIL_TO_RECIPIENTS }}
       run: |
-        # Update config with secrets
-        sed -i "s/YOUR_BOT_TOKEN_HERE/$TELEGRAM_BOT_TOKEN/g" src/main/resources/config.properties
-        sed -i "s/YOUR_CHAT_ID_HERE/$TELEGRAM_CHAT_ID/g" src/main/resources/config.properties
         
         # Set CI environment flag
         sed -i "s/ci.environment=false/ci.environment=true/g" src/main/resources/config.properties
