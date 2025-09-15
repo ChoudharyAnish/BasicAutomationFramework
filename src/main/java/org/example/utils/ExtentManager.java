@@ -358,11 +358,11 @@ public class ExtentManager {
      */
     private static void cleanupOldReports() {
         try {
-            System.out.println("🧹 Starting automatic report cleanup...");
+            System.out.println("[CLEANUP] Starting automatic report cleanup...");
             ReportCleanupManager.CleanupResult result = ReportCleanupManager.cleanupOldReportsFromConfig();
             System.out.println(result.getMessage());
         } catch (Exception e) {
-            System.err.println("⚠️ Failed to cleanup old reports: " + e.getMessage());
+            System.err.println("[WARNING] Failed to cleanup old reports: " + e.getMessage());
             // Don't fail the test execution if cleanup fails
         }
     }

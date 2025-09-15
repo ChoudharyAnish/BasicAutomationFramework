@@ -55,16 +55,17 @@ public class TelegramNotifier {
             
             int responseCode = connection.getResponseCode();
             if (responseCode == 200) {
-                System.out.println("✅ Telegram notification sent successfully");
+                System.out.println("[TELEGRAM] Telegram notification sent successfully");
             } else {
-                System.err.println("❌ Failed to send Telegram notification. Status: " + responseCode);
+                System.err.println("[ERROR] Failed to send Telegram notification. Status: " + responseCode);
             }
             
         } catch (IOException e) {
-            System.err.println("❌ Error sending Telegram notification: " + e.getMessage());
+            System.err.println("[ERROR] Error sending Telegram notification: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     /**
      * Build formatted test result message
@@ -144,4 +145,5 @@ public class TelegramNotifier {
             "📊 Results will be shared shortly...";
         sendMessage(message);
     }
+    
 }

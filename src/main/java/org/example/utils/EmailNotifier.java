@@ -6,6 +6,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import org.example.utils.ConfigReader;
 
 /**
  * Email notification utility for sending test reports
@@ -34,7 +35,7 @@ public class EmailNotifier {
         if (username != null && username.contains("${EMAIL_USERNAME}")) {
             String envUsername = System.getenv("EMAIL_USERNAME");
             if (envUsername == null || envUsername.isEmpty()) {
-                System.err.println("⚠️ EMAIL_USERNAME environment variable not set! Email notifications will be disabled.");
+                System.err.println("[WARNING] EMAIL_USERNAME environment variable not set! Email notifications will be disabled.");
                 return null;
             }
             return envUsername;
@@ -47,7 +48,7 @@ public class EmailNotifier {
         if (password != null && password.contains("${EMAIL_APP_PASSWORD}")) {
             String envPassword = System.getenv("EMAIL_APP_PASSWORD");
             if (envPassword == null || envPassword.isEmpty()) {
-                System.err.println("⚠️ EMAIL_APP_PASSWORD environment variable not set! Email notifications will be disabled.");
+                System.err.println("[WARNING] EMAIL_APP_PASSWORD environment variable not set! Email notifications will be disabled.");
                 return null;
             }
             return envPassword;
@@ -60,7 +61,7 @@ public class EmailNotifier {
         if (recipients != null && recipients.contains("${EMAIL_TO_RECIPIENTS}")) {
             String envRecipients = System.getenv("EMAIL_TO_RECIPIENTS");
             if (envRecipients == null || envRecipients.isEmpty()) {
-                System.err.println("⚠️ EMAIL_TO_RECIPIENTS environment variable not set! Email notifications will be disabled.");
+                System.err.println("[WARNING] EMAIL_TO_RECIPIENTS environment variable not set! Email notifications will be disabled.");
                 return null;
             }
             return envRecipients.split(",");
@@ -73,7 +74,7 @@ public class EmailNotifier {
      */
     public void sendTestReport(String testName, boolean passed, long duration, String reportPath) {
         if (username == null || password == null || toRecipients == null) {
-            System.err.println("⚠️ Email configuration incomplete. Skipping email notification.");
+            System.err.println("[WARNING] Email configuration incomplete. Skipping email notification.");
             return;
         }
 
@@ -124,10 +125,10 @@ public class EmailNotifier {
             message.setContent(multipart);
 
             Transport.send(message);
-            System.out.println("✅ Email notification sent successfully to: " + String.join(", ", toRecipients));
+            System.out.println("[EMAIL] Email notification sent successfully to: " + String.join(", ", toRecipients));
 
         } catch (Exception e) {
-            System.err.println("❌ Error sending email notification: " + e.getMessage());
+            System.err.println("[ERROR] Error sending email notification: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -212,6 +213,7 @@ public class EmailNotifier {
                 "<p style='color: #dc3545;'><strong>❌ Test execution encountered issues. Please review the attached report for details.</strong></p>"
         );
     }
+
 
     /**
      * Format duration to human readable format
