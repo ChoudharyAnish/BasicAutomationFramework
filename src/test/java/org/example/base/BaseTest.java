@@ -6,6 +6,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.example.utils.ConfigReader;
 import org.example.utils.ExtentManager;
 import org.example.utils.ScreenshotHelper;
+import org.example.utils.TelegramNotifier;
 import org.example.utils.WaitHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -22,10 +23,25 @@ public class BaseTest {
     protected static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
     protected WaitHelper waitHelper;
     protected ExtentTest test;
+    protected TelegramNotifier telegramNotifier;
 
     @BeforeSuite
     public void beforeSuite() {
         ExtentManager.getInstance();
+        
+        // Initialize Telegram notifier if enabled
+        if (ConfigReader.isTelegramEnabled()) {
+            String botToken = ConfigReader.getTelegramBotToken();
+            String chatId = ConfigReader.getTelegramChatId();
+            
+            if (botToken != null && chatId != null) {
+                telegramNotifier = new TelegramNotifier(botToken, chatId);
+                System.out.println("✅ Telegram notifications enabled");
+            } else {
+                System.out.println("⚠️ Telegram notifications disabled - missing environment variables");
+                telegramNotifier = null;
+            }
+        }
     }
 
     @BeforeMethod
@@ -46,6 +62,11 @@ public class BaseTest {
         test.info("📋 Test: " + testName);
         test.info("📦 Class: " + className);
         test.info("⏰ Start Time: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
+        
+        // Send Telegram start notification
+        if (telegramNotifier != null) {
+            telegramNotifier.sendTestStartNotification(testName);
+        }
         
         // Setup WebDriver
         setupDriver();
@@ -137,6 +158,14 @@ public class BaseTest {
         
         // Add test execution summary
         test.info("🏁 Test execution completed at: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
+        
+        // Send Telegram result notification
+        if (telegramNotifier != null) {
+            String testName = result.getMethod().getMethodName();
+            boolean passed = (result.getStatus() == ITestResult.SUCCESS);
+            String reportPath = ExtentManager.getReportPath();
+            telegramNotifier.sendTestResults(testName, passed, duration, reportPath);
+        }
         
         // Close browser
         if (getDriver() != null) {

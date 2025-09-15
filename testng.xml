@@ -7,35 +7,13 @@
         <!-- Add custom listeners here if needed -->
     </listeners>
     
-    <!-- Smoke Test Suite -->
-    <test name="SmokeTests" preserve-order="true">
-        <parameter name="environment" value="staging"/>
+    <!-- Nike Shoes Search Test -->
+    <test name="NikeShoesSearchTest" preserve-order="true">
+        <parameter name="environment" value="production"/>
         <classes>
-            <class name="org.example.tests.LoginTest">
+            <class name="org.example.tests.FlipkartSearchTest">
                 <methods>
-                    <include name="verifyLoginPageLoad"/>
-                    <include name="testValidLogin"/>
-                </methods>
-            </class>
-        </classes>
-    </test>
-    
-    <!-- Regression Test Suite -->
-    <test name="RegressionTests" preserve-order="false">
-        <parameter name="environment" value="staging"/>
-        <classes>
-            <class name="org.example.tests.LoginTest"/>
-            <!-- Add more test classes here -->
-        </classes>
-    </test>
-    
-    <!-- Data-Driven Tests -->
-    <test name="DataDrivenTests" preserve-order="false">
-        <parameter name="environment" value="staging"/>
-        <classes>
-            <class name="org.example.tests.LoginTest">
-                <methods>
-                    <include name="testLoginWithSimpleData"/>
+                    <include name="testNikeShoesSearch"/>
                 </methods>
             </class>
         </classes>
