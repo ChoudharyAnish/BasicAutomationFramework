@@ -1,11 +1,11 @@
 name: 🕐 Scheduled Production Tests
 
 on:
-  # Daily execution at 9:00 AM, 2:30 PM, and 9:00 PM IST
+  # Test execution at 9:10 PM IST today, then regular schedule
   schedule:
+    - cron: '40 15 * * *'  # 9:10 PM IST daily (test run)
     - cron: '30 3 * * *'   # 9:00 AM IST daily
     - cron: '0 9 * * *'    # 2:30 PM IST daily
-    - cron: '30 15 * * *'  # 9:00 PM IST daily
   
   # Manual trigger option
   workflow_dispatch:
@@ -32,6 +32,8 @@ jobs:
     steps:
     - name: 📥 Checkout Repository
       uses: actions/checkout@v4
+      with:
+        ref: main
       
     - name: ☕ Set up JDK 17
       uses: actions/setup-java@v4
