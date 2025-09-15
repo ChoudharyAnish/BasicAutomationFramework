@@ -89,7 +89,11 @@ public class ConfigReader {
         // If token contains ${}, try to get from environment variable
         if (token != null && token.contains("${TELEGRAM_BOT_TOKEN}")) {
             String envToken = System.getenv("TELEGRAM_BOT_TOKEN");
-            return envToken != null ? envToken : "7729667706:AAF79C2IVtieOXm16RWIpi0X5Mjg_65fSnA";
+            if (envToken == null || envToken.isEmpty()) {
+                System.err.println("⚠️ TELEGRAM_BOT_TOKEN environment variable not set! Telegram notifications will be disabled.");
+                return null;
+            }
+            return envToken;
         }
         return token;
     }
@@ -99,7 +103,11 @@ public class ConfigReader {
         // If chatId contains ${}, try to get from environment variable
         if (chatId != null && chatId.contains("${TELEGRAM_CHAT_ID}")) {
             String envChatId = System.getenv("TELEGRAM_CHAT_ID");
-            return envChatId != null ? envChatId : "6166074782";
+            if (envChatId == null || envChatId.isEmpty()) {
+                System.err.println("⚠️ TELEGRAM_CHAT_ID environment variable not set! Telegram notifications will be disabled.");
+                return null;
+            }
+            return envChatId;
         }
         return chatId;
     }

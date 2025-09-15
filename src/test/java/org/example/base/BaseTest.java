@@ -31,10 +31,16 @@ public class BaseTest {
         
         // Initialize Telegram notifier if enabled
         if (ConfigReader.isTelegramEnabled()) {
-            telegramNotifier = new TelegramNotifier(
-                ConfigReader.getTelegramBotToken(),
-                ConfigReader.getTelegramChatId()
-            );
+            String botToken = ConfigReader.getTelegramBotToken();
+            String chatId = ConfigReader.getTelegramChatId();
+            
+            if (botToken != null && chatId != null) {
+                telegramNotifier = new TelegramNotifier(botToken, chatId);
+                System.out.println("✅ Telegram notifications enabled");
+            } else {
+                System.out.println("⚠️ Telegram notifications disabled - missing environment variables");
+                telegramNotifier = null;
+            }
         }
     }
 
