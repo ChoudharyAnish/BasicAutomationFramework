@@ -33,6 +33,9 @@ public class ExtentManager {
         if (!reportDir.exists()) {
             reportDir.mkdirs();
         }
+        
+        // Clean up old reports before creating new one
+        cleanupOldReports();
 
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
         
@@ -348,5 +351,19 @@ public class ExtentManager {
 
     public static void removeTest() {
         test.remove();
+    }
+    
+    /**
+     * Cleans up old report files, keeping only the latest N reports as configured
+     */
+    private static void cleanupOldReports() {
+        try {
+            System.out.println("🧹 Starting automatic report cleanup...");
+            ReportCleanupManager.CleanupResult result = ReportCleanupManager.cleanupOldReportsFromConfig();
+            System.out.println(result.getMessage());
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to cleanup old reports: " + e.getMessage());
+            // Don't fail the test execution if cleanup fails
+        }
     }
 }

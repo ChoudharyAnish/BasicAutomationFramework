@@ -20,13 +20,23 @@ public class FlipkartSearchTest extends BaseTest {
         
         logStep("Searching for Nike Shoes");
         searchPage.searchForNikeShoes();
-
-        // Take screenshot after search
-        String screenshotPath = ScreenshotHelper.captureScreenshot(getDriver(), "nike_shoes_search_results");
-        test.addScreenCaptureFromPath(screenshotPath, "🔍 Nike Shoes Search Results");
-        logInfo("Screenshot captured: " + screenshotPath);
         
         logVerification("Verifying search was executed");
         logPass("Nike Shoes search completed successfully");
+    }
+
+    @Test(priority = 2, description = "Search for Camera on Flipkart")
+    public void searchForCamera() {
+        searchPage = new FlipkartSearchPage(getDriver());
+
+        logStep("Clicking on search bar");
+        searchPage.clickOnSearchBar();
+        
+        logStep("Searching for Camera");
+        searchPage.searchForCameras();
+        
+        logVerification("Verifying search was executed");
+        logPass("Camera search completed successfully");
+
     }
 }

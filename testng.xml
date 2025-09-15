@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="AutomationTestSuite" parallel="methods" thread-count="3" verbose="1">
+<suite name="AutomationTestSuite" thread-count="0" parallel="none" verbose="1">
     
     <parameter name="browser" value="chrome"/>
     
@@ -7,15 +7,11 @@
         <!-- Add custom listeners here if needed -->
     </listeners>
     
-    <!-- Nike Shoes Search Test -->
-    <test name="NikeShoesSearchTest" preserve-order="true">
+    <!-- Flipkart Search Tests - Sequential Execution -->
+    <test name="FlipkartSearchTests" preserve-order="true">
         <parameter name="environment" value="production"/>
         <classes>
-            <class name="org.example.tests.FlipkartSearchTest">
-                <methods>
-                    <include name="testNikeShoesSearch"/>
-                </methods>
-            </class>
+            <class name="org.example.tests.FlipkartSearchTest"></class>
         </classes>
     </test>
     

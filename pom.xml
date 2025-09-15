@@ -105,9 +105,6 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
-                    <parallel>methods</parallel>
-                    <threadCount>3</threadCount>
-                    <useUnlimitedThreads>false</useUnlimitedThreads>
                 </configuration>
             </plugin>
         </plugins>

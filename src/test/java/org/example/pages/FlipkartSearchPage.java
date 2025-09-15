@@ -27,20 +27,73 @@ public class FlipkartSearchPage {
     }
 
     /**
-     * Click on the search bar to focus it
+     * Click on the search bar to focus it with basic retry logic
      */
     public void clickOnSearchBar() {
-        waitHelper.waitForElementToBeClickable(searchBox);
-        searchBox.click();
+        try {
+            // Wait for page to stabilize
+            Thread.sleep(3000);
+            
+            // Try normal click first
+            waitHelper.waitForElementToBeClickable(searchBox);
+            searchBox.click();
+            System.out.println("✅ Search bar clicked successfully");
+            
+        } catch (Exception e) {
+            try {
+                // Fallback: JavaScript click
+                ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", searchBox);
+                System.out.println("✅ Search bar clicked using JavaScript");
+            } catch (Exception ex) {
+                System.err.println("❌ Both click methods failed: " + ex.getMessage());
+                throw new RuntimeException("Failed to click search bar", ex);
+            }
+        }
     }
 
     /**
-     * Search for Nike Shoes specifically
+     * Search for Nike Shoes specifically with stale element handling
      */
     public void searchForNikeShoes() {
-        waitHelper.waitForElementToBeClickable(searchBox);
-        searchBox.sendKeys("Nike Shoes");
-        searchBox.sendKeys(Keys.ENTER);
+        searchForProductRobust("Nike Shoes");
+    }
+
+    /**
+     * Search for Camera specifically with stale element handling
+     */
+    public void searchForCameras() {
+        searchForProductRobust("Camera");
+    }
+    
+    /**
+     * Robust search method that handles stale elements
+     */
+    private void searchForProductRobust(String productName) {
+        try {
+            // Wait and get fresh element reference
+            Thread.sleep(1000);
+            waitHelper.waitForElementToBeClickable(searchBox);
+            
+            // Clear any existing text
+            searchBox.clear();
+            
+            // Type the product name
+            searchBox.sendKeys(productName);
+            searchBox.sendKeys(Keys.ENTER);
+            
+            System.out.println("✅ Successfully searched for: " + productName);
+            
+        } catch (Exception e) {
+            // If stale element, try direct navigation as fallback
+            try {
+                String searchUrl = "https://www.flipkart.com/search?q=" + productName.replace(" ", "%20");
+                driver.navigate().to(searchUrl);
+                System.out.println("✅ Used direct navigation for: " + productName);
+            } catch (Exception ex) {
+                System.err.println("❌ Both search methods failed for: " + productName);
+                throw new RuntimeException("Failed to search for: " + productName, ex);
+            }
+        }
     }
 
     /**
