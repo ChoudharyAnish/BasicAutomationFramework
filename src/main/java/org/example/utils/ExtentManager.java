@@ -36,8 +36,8 @@ public class ExtentManager {
 
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
         
-        // Enhanced Theme and Styling
-        sparkReporter.config().setTheme(Theme.DARK);
+        // Enhanced Theme and Styling - Use STANDARD for better readability
+        sparkReporter.config().setTheme(Theme.STANDARD);
         sparkReporter.config().setDocumentTitle("🚀 Advanced Test Automation Report");
         sparkReporter.config().setReportName("📊 Test Execution Dashboard");
         sparkReporter.config().setTimeStampFormat("MMM dd, yyyy HH:mm:ss");
@@ -70,99 +70,205 @@ public class ExtentManager {
      */
     private static String getCustomCSS() {
         return """
-            /* Enhanced Header Styling */
-            .navbar-brand {
-                font-weight: bold;
-                color: #fff !important;
+            /* Professional Report Styling for Better Readability */
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f8f9fa;
+                color: #212529;
             }
             
-            /* Test Status Cards Enhancement */
+            /* Header Enhancement */
+            .navbar-brand {
+                font-weight: 700;
+                color: #2c3e50 !important;
+                font-size: 1.5rem;
+            }
+            
+            .navbar {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            /* Dashboard Cards with High Contrast */
             .card-panel {
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                transition: transform 0.2s;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+                border: 1px solid #e9ecef;
+                background-color: #ffffff;
+                transition: all 0.3s ease;
+                margin-bottom: 20px;
             }
             
             .card-panel:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
             
-            /* Pass Status Styling */
-            .test-pass {
-                background: linear-gradient(135deg, #28a745, #20c997) !important;
-                color: white !important;
-                border-left: 5px solid #155724 !important;
+            /* High Contrast Status Styling */
+            .test-pass, .pass {
+                background-color: #28a745 !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                padding: 8px 16px !important;
+                border-radius: 6px !important;
+                border: 2px solid #1e7e34 !important;
             }
             
-            /* Fail Status Styling */
-            .test-fail {
-                background: linear-gradient(135deg, #dc3545, #fd7e14) !important;
-                color: white !important;
-                border-left: 5px solid #721c24 !important;
+            .test-fail, .fail {
+                background-color: #dc3545 !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                padding: 8px 16px !important;
+                border-radius: 6px !important;
+                border: 2px solid #c82333 !important;
             }
             
-            /* Skip Status Styling */
-            .test-skip {
-                background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
-                color: white !important;
-                border-left: 5px solid #856404 !important;
+            .test-skip, .skip {
+                background-color: #ffc107 !important;
+                color: #212529 !important;
+                font-weight: 600 !important;
+                padding: 8px 16px !important;
+                border-radius: 6px !important;
+                border: 2px solid #e0a800 !important;
             }
             
-            /* Progress Bar Enhancement */
-            .progress {
-                height: 25px;
+            /* Test Content Readability */
+            .test-content {
+                background-color: #ffffff;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 15px 0;
+                line-height: 1.6;
+                color: #495057;
+            }
+            
+            /* Step Details with Better Contrast */
+            .step-details {
+                background-color: #f8f9fa;
+                border-left: 4px solid #007bff;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 0 8px 8px 0;
+                color: #212529;
+                font-size: 14px;
+            }
+            
+            /* Dashboard Statistics Enhancement */
+            .dashboard-view .row {
+                margin: 20px 0;
+            }
+            
+            .stats-card {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                color: #ffffff;
                 border-radius: 15px;
-                background: #f8f9fa;
+                padding: 25px;
+                text-align: center;
+                margin: 15px;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            
+            .stats-number {
+                font-size: 3em;
+                font-weight: 700;
+                margin-bottom: 8px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            
+            .stats-label {
+                font-size: 1.2em;
+                font-weight: 500;
+                opacity: 0.95;
+            }
+            
+            /* Progress Bar Professional Styling */
+            .progress {
+                height: 30px;
+                border-radius: 15px;
+                background-color: #e9ecef;
+                border: 1px solid #ced4da;
                 overflow: hidden;
             }
             
             .progress-bar {
                 background: linear-gradient(45deg, #28a745, #20c997);
-                transition: width 0.5s ease;
+                color: #ffffff;
+                font-weight: 600;
+                line-height: 30px;
+                text-align: center;
             }
             
-            /* Test Details Enhancement */
-            .test-detail {
+            /* Table Enhancements */
+            .table {
+                background-color: #ffffff;
                 border: 1px solid #dee2e6;
                 border-radius: 8px;
-                margin: 10px 0;
+                overflow: hidden;
+            }
+            
+            .table th {
+                background-color: #495057;
+                color: #ffffff;
+                font-weight: 600;
                 padding: 15px;
-                background: #f8f9fa;
+                border: none;
             }
             
-            /* Dashboard Stats Cards */
-            .stats-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border-radius: 15px;
-                padding: 20px;
-                text-align: center;
-                margin: 10px;
-                box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            .table td {
+                padding: 12px 15px;
+                color: #495057;
+                border-color: #e9ecef;
             }
             
-            .stats-number {
-                font-size: 2.5em;
-                font-weight: bold;
-                margin-bottom: 5px;
+            /* Log Messages Styling */
+            .log-message {
+                background-color: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 6px;
+                padding: 12px;
+                margin: 8px 0;
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+                color: #495057;
             }
             
-            .stats-label {
-                font-size: 1.1em;
-                opacity: 0.9;
+            /* Error Messages */
+            .error-message {
+                background-color: #f8d7da;
+                border: 1px solid #f5c6cb;
+                color: #721c24;
+                border-radius: 6px;
+                padding: 15px;
+                margin: 10px 0;
+                font-weight: 500;
             }
             
-            /* Custom Icons */
-            .status-icon {
-                font-size: 1.2em;
-                margin-right: 8px;
+            /* Success Messages */
+            .success-message {
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                color: #155724;
+                border-radius: 6px;
+                padding: 15px;
+                margin: 10px 0;
+                font-weight: 500;
             }
             
             /* Responsive Design */
             @media (max-width: 768px) {
                 .stats-card {
-                    margin: 5px 0;
+                    margin: 10px 5px;
+                    padding: 20px;
+                }
+                
+                .stats-number {
+                    font-size: 2.5em;
+                }
+                
+                .card-panel {
+                    margin: 10px 0;
                 }
             }
             """;

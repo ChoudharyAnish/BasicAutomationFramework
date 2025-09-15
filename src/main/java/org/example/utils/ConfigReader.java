@@ -115,4 +115,8 @@ public class ConfigReader {
     public static boolean isTelegramEnabled() {
         return Boolean.parseBoolean(getProperty("telegram.enabled"));
     }
+
+    public static boolean isEmailEnabled() {
+        return Boolean.parseBoolean(getProperty("email.enabled"));
+    }
 }

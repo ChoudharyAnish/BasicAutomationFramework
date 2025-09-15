@@ -4,6 +4,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.example.utils.ConfigReader;
+import org.example.utils.EmailNotifier;
 import org.example.utils.ExtentManager;
 import org.example.utils.ScreenshotHelper;
 import org.example.utils.TelegramNotifier;
@@ -24,6 +25,7 @@ public class BaseTest {
     protected WaitHelper waitHelper;
     protected ExtentTest test;
     protected TelegramNotifier telegramNotifier;
+    protected EmailNotifier emailNotifier;
 
     @BeforeSuite
     public void beforeSuite() {
@@ -41,6 +43,12 @@ public class BaseTest {
                 System.out.println("⚠️ Telegram notifications disabled - missing environment variables");
                 telegramNotifier = null;
             }
+        }
+        
+        // Initialize Email notifier if enabled
+        if (ConfigReader.isEmailEnabled()) {
+            emailNotifier = new EmailNotifier();
+            System.out.println("✅ Email notifications enabled");
         }
     }
 
@@ -159,13 +167,21 @@ public class BaseTest {
         // Add test execution summary
         test.info("🏁 Test execution completed at: " + new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date()));
         
-        // Send Telegram result notification
-        if (telegramNotifier != null) {
-            String testName = result.getMethod().getMethodName();
-            boolean passed = (result.getStatus() == ITestResult.SUCCESS);
-            String reportPath = ExtentManager.getReportPath();
-            telegramNotifier.sendTestResults(testName, passed, duration, reportPath);
-        }
+               // Send Telegram result notification
+               if (telegramNotifier != null) {
+                   String testName = result.getMethod().getMethodName();
+                   boolean passed = (result.getStatus() == ITestResult.SUCCESS);
+                   String reportPath = ExtentManager.getReportPath();
+                   telegramNotifier.sendTestResults(testName, passed, duration, reportPath);
+               }
+               
+               // Send Email result notification
+               if (emailNotifier != null) {
+                   String testName = result.getMethod().getMethodName();
+                   boolean passed = (result.getStatus() == ITestResult.SUCCESS);
+                   String reportPath = ExtentManager.getReportPath();
+                   emailNotifier.sendTestReport(testName, passed, duration, reportPath);
+               }
         
         // Close browser
         if (getDriver() != null) {
