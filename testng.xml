@@ -7,11 +7,27 @@
         <!-- Add custom listeners here if needed -->
     </listeners>
     
-    <!-- Flipkart Search Tests - Sequential Execution -->
+    <!-- UI Tests - Flipkart Search Tests -->
     <test name="FlipkartSearchTests" preserve-order="true">
         <parameter name="environment" value="production"/>
         <classes>
             <class name="org.example.tests.FlipkartSearchTest"></class>
+        </classes>
+    </test>
+    
+    <!-- API Tests - Products API Tests -->
+    <test name="ProductsAPITests" preserve-order="true">
+        <parameter name="environment" value="production"/>
+        <classes>
+            <class name="org.example.tests.ProductsAPITest"></class>
+        </classes>
+    </test>
+    
+    <!-- API Tests - Brands API Tests -->
+    <test name="BrandsAPITests" preserve-order="true">
+        <parameter name="environment" value="production"/>
+        <classes>
+            <class name="org.example.tests.BrandsAPITest"></class>
         </classes>
     </test>
     
