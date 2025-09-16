@@ -33,6 +33,19 @@ public class BaseTest {
     protected static int failedTests = 0;
     protected static java.util.List<String> testResults = new java.util.ArrayList<>();
     protected static long suiteStartTime = 0;
+    
+    // Public methods for API tests to update counters
+    public static synchronized void incrementTotalTests() {
+        totalTests++;
+    }
+    
+    public static synchronized void incrementPassedTests() {
+        passedTests++;
+    }
+    
+    public static synchronized void incrementFailedTests() {
+        failedTests++;
+    }
 
     @BeforeSuite
     public void beforeSuite() {
@@ -238,19 +251,26 @@ public class BaseTest {
         if (emailNotifier != null) {
             System.out.println("[EMAIL] Sending consolidated notification...");
             String emailSummary = buildEmailSummary(successRate, suiteDuration, timestamp);
-            emailNotifier.sendTestReport("FlipkartSearchTests", failedTests == 0, suiteDuration, reportPath);
+            emailNotifier.sendTestReport("Hybrid Automation Framework", failedTests == 0, suiteDuration, reportPath);
         }
         
         // Print suite summary to console
         System.out.println("\n" + "=".repeat(60));
-        System.out.println("*** TEST SUITE SUMMARY ***");
+        System.out.println("*** HYBRID AUTOMATION FRAMEWORK SUMMARY ***");
         System.out.println("=".repeat(60));
-        System.out.printf("Suite: FlipkartSearchTests%n");
+        System.out.printf("Framework: UI + API Tests (Hybrid)%n");
         System.out.printf("[PASS] Passed: %d tests%n", passedTests);
         System.out.printf("[FAIL] Failed: %d tests%n", failedTests);
+        System.out.printf("Total Tests: %d%n", totalTests);
         System.out.printf("Success Rate: %.1f%%%n", successRate);
         System.out.printf("Duration: %s%n", formatDuration(suiteDuration));
         System.out.printf("Completed: %s%n", timestamp);
+        System.out.println("=".repeat(60));
+        
+        // Additional breakdown for clarity
+        System.out.println("📊 Test Breakdown:");
+        System.out.println("   • UI Tests (Selenium): FlipkartSearchTest");
+        System.out.println("   • API Tests (REST Assured): ProductsAPITest, BrandsAPITest");
         System.out.println("=".repeat(60));
     }
     
@@ -261,13 +281,19 @@ public class BaseTest {
         StringBuilder message = new StringBuilder();
         
         // Header
-        message.append("*** Test Suite Completed: FlipkartSearchTests ***\n\n");
+        message.append("🚀 *** Hybrid Automation Framework Completed ***\n\n");
         
         // Summary
-        message.append("EXECUTION SUMMARY:\n");
+        message.append("📊 EXECUTION SUMMARY:\n");
         message.append("[PASS] Passed: ").append(passedTests).append(" tests\n");
         message.append("[FAIL] Failed: ").append(failedTests).append(" tests\n");
+        message.append("Total Tests: ").append(totalTests).append("\n");
         message.append("Success Rate: ").append(String.format("%.1f%%", successRate)).append("\n\n");
+        
+        // Framework breakdown
+        message.append("🧪 TEST TYPES:\n");
+        message.append("• UI Tests (Selenium): FlipkartSearchTest\n");
+        message.append("• API Tests (REST Assured): ProductsAPITest, BrandsAPITest\n\n");
         
         // Timing
         message.append("Duration: ").append(formatDuration(duration)).append("\n");
