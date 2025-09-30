@@ -58,9 +58,9 @@ jobs:
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-        EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
-        EMAIL_TO_RECIPIENTS: ${{ secrets.EMAIL_TO_RECIPIENTS }}
+        # EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+        # EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+        # EMAIL_TO_RECIPIENTS: ${{ secrets.EMAIL_TO_RECIPIENTS }}
       run: |
         
         # Set CI environment flag
